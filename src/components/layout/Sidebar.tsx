@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, FileText } from "lucide-react";
 import { docs, type RouteSection } from "@/lib/docs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,13 +31,24 @@ export function Sidebar({ collapsed, onToggle, currentSection }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "h-[calc(100vh-3.5rem)] overflow-y-auto border-r border-slate-200 bg-slate-50/95 p-2 transition-all",
-        collapsed ? "w-16" : "w-80",
+        "shrink-0 overflow-y-auto border-slate-200 bg-slate-50/95 p-2 transition-all duration-300",
+        "md:h-[calc(100vh-3.5rem)] md:border-r border-b md:border-b-0",
+        collapsed 
+          ? "h-14 overflow-hidden md:h-[calc(100vh-3.5rem)] md:w-16 md:overflow-y-auto" 
+          : "max-h-[50vh] md:max-h-none md:w-80",
       )}
     >
-      <div className="sticky top-0 z-10 mb-3 flex justify-end border-b border-slate-200 bg-slate-50/95 pb-2 pt-1 backdrop-blur">
+      <div className="sticky top-0 z-10 mb-3 flex items-center justify-between md:justify-end border-b border-slate-200 bg-slate-50/95 pb-2 pt-1 backdrop-blur">
+        <span className="md:hidden text-sm font-semibold text-slate-700 px-2">
+          Document Navigation
+        </span>
         <Button variant="ghost" size="sm" onClick={onToggle}>
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          <span className="hidden md:block">
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </span>
+          <span className="md:hidden">
+            {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </span>
         </Button>
       </div>
       {categoryOrder.filter((folder) => grouped[folder]?.length).map((folder) => (
@@ -56,6 +67,11 @@ export function Sidebar({ collapsed, onToggle, currentSection }: SidebarProps) {
                 <Link
                   key={doc.id}
                   to={to}
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth < 768 && !collapsed) {
+                      onToggle();
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
                     isActive ? "bg-brand-100 text-brand-900" : isCurrentSection ? "text-slate-700 hover:bg-slate-100" : "text-slate-500 hover:bg-slate-100",
@@ -88,6 +104,11 @@ export function Sidebar({ collapsed, onToggle, currentSection }: SidebarProps) {
                 <Link
                   key={doc.id}
                   to={to}
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && window.innerWidth < 768 && !collapsed) {
+                      onToggle();
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
                     isActive ? "bg-brand-100 text-brand-900" : isCurrentSection ? "text-slate-700 hover:bg-slate-100" : "text-slate-500 hover:bg-slate-100",
