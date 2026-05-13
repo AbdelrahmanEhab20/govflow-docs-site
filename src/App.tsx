@@ -5,7 +5,7 @@ import { TopNav } from "@/components/layout/TopNav";
 
 function App() {
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 text-slate-900">
       <TopNav />
       <Routes>
         <Route path="/" element={<HomePage />} />

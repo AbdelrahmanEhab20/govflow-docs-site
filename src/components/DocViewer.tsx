@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
-import { Download } from "lucide-react";
+import { Download, Clock, FileText } from "lucide-react";
 import type { Components } from "react-markdown";
 import type { DocRecord } from "@/lib/docs";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,58 @@ interface DocViewerProps {
 }
 
 const markdownComponents: Components = {
+  h1: ({ className, ...props }) => (
+    <h1
+      {...props}
+      className={`mb-6 text-4xl font-bold text-slate-900 pt-2 ${className || ""}`}
+    />
+  ),
+  h2: ({ className, ...props }) => (
+    <h2
+      {...props}
+      className={`mb-4 mt-10 border-b border-slate-300 pb-3 text-2xl font-bold text-slate-900 ${className || ""}`}
+    />
+  ),
+  h3: ({ className, ...props }) => (
+    <h3
+      {...props}
+      className={`mb-3 mt-8 text-xl font-semibold text-slate-800 ${className || ""}`}
+    />
+  ),
+  h4: ({ className, ...props }) => (
+    <h4
+      {...props}
+      className={`mb-2 mt-6 text-lg font-semibold text-slate-700 ${className || ""}`}
+    />
+  ),
+  p: ({ className, ...props }) => (
+    <p
+      {...props}
+      className={`mb-4 text-slate-700 leading-relaxed ${className || ""}`}
+    />
+  ),
+  ul: ({ className, ...props }) => (
+    <ul
+      {...props}
+      className={`mb-4 ml-6 list-disc space-y-2 text-slate-700 ${className || ""}`}
+    />
+  ),
+  ol: ({ className, ...props }) => (
+    <ol
+      {...props}
+      className={`mb-4 ml-6 list-decimal space-y-2 text-slate-700 ${className || ""}`}
+    />
+  ),
+  li: ({ className, ...props }) => (
+    <li
+      {...props}
+      className={`text-slate-700 ${className || ""}`}
+    />
+  ),
   a: ({ className, ...props }) => (
     <a
       {...props}
-      className={`font-medium text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800 ${className || ""}`}
+      className={`font-semibold text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition ${className || ""}`}
       target={props.href?.startsWith("http") ? "_blank" : undefined}
       rel={props.href?.startsWith("http") ? "noreferrer" : undefined}
     />
@@ -24,14 +72,55 @@ const markdownComponents: Components = {
   blockquote: ({ className, ...props }) => (
     <blockquote
       {...props}
-      className={`rounded-r-md border-l-4 border-blue-200 bg-blue-50/60 px-4 py-2 text-slate-700 ${className || ""}`}
+      className={`my-4 border-l-4 border-blue-400 bg-blue-50 px-5 py-4 italic text-slate-700 rounded-r-md ${className || ""}`}
     />
   ),
-  hr: ({ className, ...props }) => <hr {...props} className={`my-8 border-slate-200 ${className || ""}`} />,
+  code: ({ className, ...props }: any) => {
+    const isInline = !className;
+    if (isInline) {
+      return (
+        <code
+          {...props}
+          className={`bg-slate-200 text-slate-900 px-2 py-1 rounded font-mono text-sm ${className || ""}`}
+        />
+      );
+    }
+    return <code {...props} className={className} />;
+  },
+  pre: ({ className, ...props }) => (
+    <pre
+      {...props}
+      className={`my-5 overflow-x-auto rounded-lg border border-slate-300 bg-slate-900 p-4 text-sm leading-relaxed ${className || ""}`}
+    />
+  ),
+  hr: ({ className, ...props }) => (
+    <hr {...props} className={`my-8 border-t-2 border-slate-300 ${className || ""}`} />
+  ),
   table: ({ className, ...props }) => (
-    <div className="my-5 overflow-x-auto">
-      <table {...props} className={`min-w-full ${className || ""}`} />
+    <div className="my-6 overflow-x-auto rounded-lg border border-slate-200">
+      <table {...props} className={`w-full text-sm ${className || ""}`} />
     </div>
+  ),
+  thead: ({ className, ...props }) => (
+    <thead {...props} className={`bg-slate-100 ${className || ""}`} />
+  ),
+  tbody: ({ className, ...props }) => (
+    <tbody {...props} className={`divide-y divide-slate-200 ${className || ""}`} />
+  ),
+  tr: ({ className, ...props }) => (
+    <tr {...props} className={`${className || ""}`} />
+  ),
+  th: ({ className, ...props }) => (
+    <th {...props} className={`px-4 py-3 text-left font-semibold text-slate-900 ${className || ""}`} />
+  ),
+  td: ({ className, ...props }) => (
+    <td {...props} className={`px-4 py-3 text-slate-700 ${className || ""}`} />
+  ),
+  img: ({ className, ...props }) => (
+    <img
+      {...props}
+      className={`my-6 rounded-lg border border-slate-200 shadow-md max-w-full h-auto ${className || ""}`}
+    />
   ),
 };
 
@@ -45,38 +134,54 @@ export function DocViewer({ doc }: DocViewerProps) {
   }
 
   return (
-    <div className="min-w-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-5 py-4">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">{doc.title}</h2>
-          <p className="text-xs text-slate-500">{doc.relativePath}</p>
-        </div>
-        {doc.pdfHref ? (
-          <a href={doc.pdfHref} target="_blank" rel="noreferrer">
-            <Button variant="outline" size="sm">
-              <Download className="mr-1 h-4 w-4" />
-              Download PDF
+    <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-6 py-5">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="h-5 w-5 text-slate-600 shrink-0" />
+              <h2 className="text-2xl font-bold text-slate-900">{doc.title}</h2>
+            </div>
+            <p className="text-sm text-slate-500 font-mono">{doc.relativePath}</p>
+            <div className="mt-3 flex items-center gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>Auto-updated</span>
+              </div>
+              <span>•</span>
+              <span>{doc.headings.filter(h => h.level === 1 || h.level === 2).length} sections</span>
+            </div>
+          </div>
+          {doc.pdfHref ? (
+            <a href={doc.pdfHref} target="_blank" rel="noreferrer" className="shrink-0">
+              <Button size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Download PDF
+              </Button>
+            </a>
+          ) : (
+            <Button variant="outline" size="sm" disabled title="No exported PDF found for this document" className="shrink-0 gap-2">
+              <Download className="h-4 w-4" />
+              PDF Unavailable
             </Button>
-          </a>
-        ) : (
-          <Button variant="outline" size="sm" disabled title="No exported PDF found for this document">
-            <Download className="mr-1 h-4 w-4" />
-            PDF Unavailable
-          </Button>
-        )}
+          )}
+        </div>
       </div>
-      <div className="overflow-auto px-6 py-7">
-        <div className="prose prose-slate max-w-4xl text-[15px] leading-7 prose-headings:scroll-mt-24 prose-headings:font-semibold prose-h1:text-3xl prose-h2:mt-10 prose-h2:border-b prose-h2:border-slate-200 prose-h2:pb-2 prose-h2:text-2xl prose-h3:mt-8 prose-h3:text-xl prose-p:text-slate-700 prose-li:marker:text-slate-400 prose-strong:text-slate-900 prose-code:rounded prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-slate-800 prose-pre:my-5 prose-pre:rounded-xl prose-pre:border prose-pre:border-slate-800 prose-img:rounded-lg prose-img:border prose-img:border-slate-200">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight, rehypeSlug]}
-          components={markdownComponents}
-        >
-          {doc.content}
-        </ReactMarkdown>
+      <div className="overflow-auto max-h-[calc(100vh-12rem)]">
+        <div className="px-8 py-8 max-w-4xl">
+          <article className="prose prose-slate prose-base max-w-none text-[16px]">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeHighlight, rehypeSlug]}
+              components={markdownComponents}
+            >
+              {doc.content}
+            </ReactMarkdown>
+          </article>
         </div>
       </div>
     </div>
   );
 }
+
 

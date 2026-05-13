@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, BookOpen } from "lucide-react";
 import { branding } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 
@@ -17,22 +17,31 @@ export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-[1680px] items-center justify-between px-4">
-        <Link to="/" className="shrink-0 font-semibold text-slate-900" onClick={() => setIsOpen(false)}>
-          {branding.logoText}
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
+      <div className="mx-auto flex h-16 max-w-[1680px] items-center justify-between px-4">
+        <Link
+          to="/"
+          className="shrink-0 flex items-center gap-2.5 hover:opacity-80 transition"
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold">
+            <BookOpen className="h-5 w-5" />
+          </div>
+          <span className="font-bold text-slate-900 tracking-tight hidden sm:block">{branding.logoText}</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex min-w-0 items-center gap-2">
+        <nav className="hidden md:flex items-center gap-1">
           {routes.map((route) => (
             <NavLink
               key={route.to}
               to={route.to}
               className={({ isActive }) =>
                 cn(
-                  "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 transition-colors",
-                  isActive && "bg-slate-100 text-slate-900 font-medium",
+                  "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-blue-100 text-blue-900"
+                    : "text-slate-600 hover:bg-slate-100",
                 )
               }
             >
@@ -43,7 +52,7 @@ export function TopNav() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden flex items-center p-2 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+          className="md:hidden flex items-center p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors shrink-0"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle navigation menu"
         >
@@ -53,7 +62,7 @@ export function TopNav() {
 
       {/* Mobile Navigation Dropdown */}
       {isOpen && (
-        <div className="md:hidden absolute top-14 left-0 w-full bg-white border-b border-slate-200 shadow-lg py-2 px-4 flex flex-col gap-1">
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-slate-200 shadow-lg py-2 px-2 flex flex-col gap-1">
           {routes.map((route) => (
             <NavLink
               key={route.to}
@@ -61,8 +70,10 @@ export function TopNav() {
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  "block w-full rounded-md px-4 py-3 text-base text-slate-600 hover:bg-slate-50 transition-colors",
-                  isActive && "bg-slate-50 text-slate-900 font-medium",
+                  "block w-full rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                  isActive
+                    ? "bg-blue-100 text-blue-900"
+                    : "text-slate-600 hover:bg-slate-50",
                 )
               }
             >
